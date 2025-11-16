@@ -4,7 +4,7 @@ import pandas as pd
 import re
 from io import BytesIO
 
-st.title("PDF vs PPID Comparison Tool")
+st.title("PDF Check")
 
 # --- Step 1: Input PPID list ---
 st.header("1. Enter PPID List")
@@ -66,3 +66,4 @@ if st.button("Run Comparison"):
             file_name="comparison_results.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
