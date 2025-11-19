@@ -8,7 +8,7 @@ st.title("PDF Check")
 
 # --- Step 1: Input PPID list ---
 st.header("1. Enter PPID List")
-ppid_text = st.text_area("Paste PPIDs here (one per line)")
+ppid_text = st.text_area("Paste PPIDs from Assigned Sheet here")
 
 # --- Step 2: Upload PDF files ---
 st.header("2. Upload PDF Files")
@@ -66,4 +66,5 @@ if st.button("Run Comparison"):
             file_name="comparison_results.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
 
