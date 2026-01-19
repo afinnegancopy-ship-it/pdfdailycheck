@@ -3,6 +3,7 @@ import pdfplumber
 import pandas as pd
 import re
 from io import BytesIO
+from pypdf import PdfWriter, PdfReader
 
 st.title("PDF Check")
 
@@ -13,6 +14,36 @@ ppid_text = st.text_area("Paste PPIDs from Assigned Sheet here")
 # --- Step 2: Upload PDF files ---
 st.header("2. Upload PDF Files")
 uploaded_pdfs = st.file_uploader("Upload PDFs", type="pdf", accept_multiple_files=True)
+
+# --- PDF Merge Option ---
+if uploaded_pdfs and len(uploaded_pdfs) > 1:
+    st.header("3. Merge PDFs (Optional)")
+    if st.button("Merge & Download PDFs"):
+        try:
+            merger = PdfWriter()
+            for pdf_file in uploaded_pdfs:
+                pdf_file.seek(0)
+                reader = PdfReader(pdf_file)
+                for page in reader.pages:
+                    merger.add_page(page)
+            
+            merged_output = BytesIO()
+            merger.write(merged_output)
+            merged_output.seek(0)
+            
+            st.download_button(
+                "📥 Download Merged PDF",
+                data=merged_output.getvalue(),
+                file_name="merged_document.pdf",
+                mime="application/pdf"
+            )
+            st.success(f"Merged {len(uploaded_pdfs)} PDFs successfully!")
+        except Exception as e:
+            st.error(f"Error merging PDFs: {e}")
+
+# --- Run Comparison ---
+comparison_header = "4. Run Comparison" if uploaded_pdfs and len(uploaded_pdfs) > 1 else "3. Run Comparison"
+st.header(comparison_header)
 
 if st.button("Run Comparison"):
     if not ppid_text.strip():
@@ -31,6 +62,7 @@ if st.button("Run Comparison"):
         pdf_numbers = []
         for pdf_file in uploaded_pdfs:
             try:
+                pdf_file.seek(0)
                 with pdfplumber.open(pdf_file) as pdf:
                     for page in pdf.pages:
                         text = page.extract_text() or ""
@@ -66,5 +98,3 @@ if st.button("Run Comparison"):
             file_name="comparison_results.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-
-
